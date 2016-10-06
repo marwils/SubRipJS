@@ -1,0 +1,31 @@
+﻿<html>
+	<head>
+		<title>SubRip Test</title>
+		<script src="subrip.js"></script>
+		<style type="text/css">
+			label, button {
+				display: block;
+				margin: 4px 0;
+			}
+			textarea {
+				width: 400px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<form id="srtForm">
+			<label for="srtContent">SRT Content</label>
+			<textarea id="srtContent" name="srtContent"></textarea>
+			<button id type="submit">Parse</button>
+		</form>
+		<script>
+document.getElementById("srtForm").addEventListener('submit', function(e) {
+	e.preventDefault();
+	var subRipObject = SubRip.parse(document.getElementById("srtContent").value);
+	console.log(subRipObject);
+	window.subRipObject = subRipObject;
+});
+		</script>
+	</body>
+</html>
