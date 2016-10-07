@@ -22,9 +22,8 @@
 		<script>
 document.getElementById("srtForm").addEventListener('submit', function(e) {
 	e.preventDefault();
-	var subRipObject = SubRip.parse(document.getElementById("srtContent").value);
-	console.log(subRipObject);
-	window.subRipObject = subRipObject;
+	var srtObj = SubRip.parse(document.getElementById("srtContent").value);
+	console.log(srtObj);
 });
 		</script>
 	</body>

@@ -1,7 +1,15 @@
-(function() {
+/**
+ * SubRipJS
+ * Version: 1.0
+ * Author: Martin Wilsdorf (de.marwils@gmail.com)
+ *
+ * SubRipJS is a  simple JavaScript based SRT (SubRip) file format parser and
+ * creator (see https://en.wikipedia.org/wiki/SubRip).
+ */
 
+(function() {
 var
-strip = function(s) {
+trim = function(s) {
 	return s.replace(/^\s+|\s+$/g, '');
 },
 
@@ -22,12 +30,24 @@ SubRipTimeObject = function(timeData) {
 	date.setMilliseconds(millis);
 
 	this.text = timeData;
-	this.date = date;
+	this.time = date;
 };
 
-SubRip.prototype.append = function(subRipEntryData) {
-	if (subRipEntryData instanceof SubRipEntryData) {
-		this.entries.push(subRipEntryData);
+SubRip.prototype.append = function() {
+	if (arguments.length === 0) {
+		return;
+	}
+	var index;
+	if (arguments.length === 1) {
+		if (arguments[0] instanceof SubRipEntryData) {
+			this.entries.push(arguments[0]);
+		} else if (Array.isArray(arguments[0])) {
+			for (index in arguments[0]) {
+				this.append(arguments[0][index]);
+			}
+		}
+	} else if (arguments.length > 2) {
+		this.append(new SubRipEntryData(arguments[0], arguments[1], arguments[2], arguments[3]))
 	}
 };
 
@@ -42,7 +62,7 @@ SubRip.parse = function(subRipString) {
 	entryData, timeData, textData,
 	subRipObject = new SubRip();
 
-	subRipString = strip(subRipString.replace(/\r\n|\r|\n/g, '\n'));
+	subRipString = trim(subRipString.replace(/\r\n|\r|\n/g, '\n'));
 	entries = subRipString.split('\n\n');
 
 	for (entryIndex in entries) {
@@ -58,14 +78,14 @@ SubRip.parse = function(subRipString) {
 
 		for (lineIndex = 3, entryLinesLength = entryLines.length; lineIndex < entryLinesLength; textData += '\n' + entryLines[lineIndex++]);
 
-		subRipObject.append(new SubRipEntryData(entryLines[0], strip(timeData[0]), strip(timeData[1]), textData));
+		subRipObject.append(new SubRipEntryData(entryLines[0], trim(timeData[0]), trim(timeData[1]), textData));
 	}
 
 	return subRipObject;
 };
 
 SubRipEntryData = function(id, start, end, text) {
-	this.id = id;
+	this.id = parseInt(id);
 	this.start = new SubRipTimeObject(start);
 	this.end = new SubRipTimeObject(end);
 	this.text = text;
@@ -78,12 +98,20 @@ SubRipEntryData.prototype.toString = function() {
 }
 
 SubRipTimeObject.prototype.toSeconds = function() {
-	return this.date.getHours() * 3600 + this.date.getMinutes() * 60 + this.date.getSeconds() + this.date.getMilliseconds() / 1000;
+	return this.time.getHours() * 3600 + this.time.getMinutes() * 60 + this.time.getSeconds() + this.time.getMilliseconds() / 1000;
 };
 
 SubRipTimeObject.prototype.toMilliseconds = function() {
-	return this.date.getHours() * 3600000 + this.date.getMinutes() * 60000 + this.date.getSeconds() * 1000 + this.date.getMilliseconds();
+	return this.time.getHours() * 3600000 + this.time.getMinutes() * 60000 + this.time.getSeconds() * 1000 + this.time.getMilliseconds();
 };
+
+// isArray() polyfill
+// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Compatibility
+if (!Array.isArray) {
+  Array.isArray = function (vArg) {
+    return Object.prototype.toString.call(vArg) === "[object Array]";
+  };
+}
 
 window.SubRip = SubRip;
 window.SubRipEntryData = SubRipEntryData;
