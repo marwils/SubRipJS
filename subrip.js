@@ -31,6 +31,10 @@ SubRip.prototype.append = function(subRipEntryData) {
 	}
 };
 
+SubRip.prototype.toSrt = function() {
+	return this.entries.join('\n\n');
+};
+
 SubRip.parse = function(subRipString) {
 	var
 	entries,
@@ -60,6 +64,19 @@ SubRip.parse = function(subRipString) {
 	return subRipObject;
 };
 
+SubRipEntryData = function(id, start, end, text) {
+	this.id = id;
+	this.start = new SubRipTimeObject(start);
+	this.end = new SubRipTimeObject(end);
+	this.text = text;
+};
+
+SubRipEntryData.prototype.toString = function() {
+	var value = [this.start.text, this.end.text].join(' --> ');
+	value = [this.id, value, this.text].join('\n');
+	return value;
+}
+
 SubRipTimeObject.prototype.toSeconds = function() {
 	return this.date.getHours() * 3600 + this.date.getMinutes() * 60 + this.date.getSeconds() + this.date.getMilliseconds() / 1000;
 };
@@ -68,13 +85,7 @@ SubRipTimeObject.prototype.toMilliseconds = function() {
 	return this.date.getHours() * 3600000 + this.date.getMinutes() * 60000 + this.date.getSeconds() * 1000 + this.date.getMilliseconds();
 };
 
-SubRipEntryData = function(id, start, end, text) {
-	this.id = id;
-	this.start = new SubRipTimeObject(start);
-	this.end = new SubRipTimeObject(end);
-	this.text = text;
-};
-
 window.SubRip = SubRip;
+window.SubRipEntryData = SubRipEntryData;
 
 }())
