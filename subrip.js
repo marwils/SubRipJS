@@ -60,10 +60,11 @@ SubRip.parse = function(subRipString) {
 	entries,
 	entry, entryIndex, entryLines, entryLinesLength, lineIndex,
 	entryData, timeData, textData,
-	subRipObject = new SubRip();
+	subRipObject = new SubRip(),
+	subRipData = subRipString || '';
 
-	subRipString = trim(subRipString.replace(/\r\n|\r|\n/g, '\n'));
-	entries = subRipString.split('\n\n');
+	subRipData = trim(subRipData.replace(/\r\n|\r|\n/g, '\n'));
+	entries = subRipData.split('\n\n');
 
 	for (entryIndex in entries) {
 		entry = entries[entryIndex];
